@@ -129,9 +129,13 @@ class Connection:
 
     def __del__(self, _warnings: Any = warnings) -> None:
         if self._protocol is not None:
-            _warnings.warn(
-                f"Unclosed connection {self!r}", ResourceWarning, source=self
-            )
+            message = f"Unclosed connection {self!r}"
+            if self._source_traceback is not None:
+                message += (
+                    "\nCreated at:\n"
+                    + "".join(traceback.format_list(self._source_traceback)).rstrip()
+                )
+            _warnings.warn(message, ResourceWarning, source=self)
             if self._loop.is_closed():
                 return
 
@@ -333,14 +337,19 @@ class BaseConnector:
 
         self._close_immediately()
 
-        _warnings.warn(f"Unclosed connector {self!r}", ResourceWarning, source=self)
+        message = f"Unclosed connector {self!r}"
         context = {
             "connector": self,
             "connections": conns,
             "message": "Unclosed connector",
         }
         if self._source_traceback is not None:
+            message += (
+                "\nCreated at:\n"
+                + "".join(traceback.format_list(self._source_traceback)).rstrip()
+            )
             context["source_traceback"] = self._source_traceback
+        _warnings.warn(message, ResourceWarning, source=self)
         self._loop.call_exception_handler(context)
 
     async def __aenter__(self) -> "BaseConnector":

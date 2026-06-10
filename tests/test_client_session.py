@@ -539,10 +539,11 @@ async def test_del_debug(
     logs = []
     loop.set_exception_handler(lambda loop, ctx: logs.append(ctx))
 
-    with pytest.warns(ResourceWarning):
+    with pytest.warns(ResourceWarning) as warnings:
         del session
         gc.collect()
 
+    assert "Created at:" in str(warnings[0].message)
     assert len(logs) == 1
     expected = {
         "client_session": mock.ANY,

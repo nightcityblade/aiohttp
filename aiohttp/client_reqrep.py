@@ -357,12 +357,17 @@ class ClientResponse(HeadersMixin):
             self._cleanup_writer()
 
             if self._loop.get_debug():
-                _warnings.warn(
-                    f"Unclosed response {self!r}", ResourceWarning, source=self
-                )
+                message = f"Unclosed response {self!r}"
                 context = {"client_response": self, "message": "Unclosed response"}
                 if self._source_traceback:
+                    message += (
+                        "\nCreated at:\n"
+                        + "".join(
+                            traceback.format_list(self._source_traceback)
+                        ).rstrip()
+                    )
                     context["source_traceback"] = self._source_traceback
+                _warnings.warn(message, ResourceWarning, source=self)
                 self._loop.call_exception_handler(context)
 
     def __repr__(self) -> str:

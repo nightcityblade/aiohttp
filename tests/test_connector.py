@@ -167,10 +167,11 @@ def test_connection_del_loop_debug(loop: asyncio.AbstractEventLoop) -> None:
     exc_handler = mock.Mock()
     loop.set_exception_handler(exc_handler)
 
-    with pytest.warns(ResourceWarning):
+    with pytest.warns(ResourceWarning) as warnings:
         del conn
         gc.collect()
 
+    assert "Created at:" in str(warnings[0].message)
     msg = {
         "message": mock.ANY,
         "client_connection": mock.ANY,
@@ -189,10 +190,11 @@ def test_connection_del_loop_closed(loop: asyncio.AbstractEventLoop) -> None:
     loop.set_exception_handler(exc_handler)
     loop.close()
 
-    with pytest.warns(ResourceWarning):
+    with pytest.warns(ResourceWarning) as warnings:
         del conn
         gc.collect()
 
+    assert "Created at:" in str(warnings[0].message)
     assert not connector._release.called
     assert not exc_handler.called
 

@@ -432,14 +432,15 @@ class ClientSession:
 
     def __del__(self, _warnings: Any = warnings) -> None:
         if not self.closed:
-            _warnings.warn(
-                f"Unclosed client session {self!r}",
-                ResourceWarning,
-                source=self,
-            )
+            message = f"Unclosed client session {self!r}"
             context = {"client_session": self, "message": "Unclosed client session"}
             if self._source_traceback is not None:
+                message += (
+                    "\nCreated at:\n"
+                    + "".join(traceback.format_list(self._source_traceback)).rstrip()
+                )
                 context["source_traceback"] = self._source_traceback
+            _warnings.warn(message, ResourceWarning, source=self)
             self._loop.call_exception_handler(context)
 
     if sys.version_info >= (3, 11) and TYPE_CHECKING:

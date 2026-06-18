@@ -1,0 +1,1 @@
+Improved Sphinx field-list styling so parameter labels remain readable when descriptions contain wide content.

@@ -5,3 +5,7 @@
 .sphinxsidebarwrapper>p.logo>a>img.logo {
   width: 65%;
 }
+
+.field-list .field-name {
+  min-width: 6em;
+}

@@ -1,0 +1,2 @@
+Fixed API reference parameter label styling to avoid overly narrow field names in generated documentation
+-- by :user:`nightcityblade`.

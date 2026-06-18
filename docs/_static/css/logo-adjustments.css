@@ -5,3 +5,8 @@
 .sphinxsidebarwrapper>p.logo>a>img.logo {
   width: 65%;
 }
+
+/* Keep Sphinx field-list labels readable when their contents are long. */
+dl.field-list>dt {
+  min-width: 6em;
+}
